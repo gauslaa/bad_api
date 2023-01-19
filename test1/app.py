@@ -5,12 +5,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-DATABASE_URL = os.environ["DATABASE_URL"]
+DATABASE_URL = os.environ.get("DATABASE_URL")
 print(DATABASE_URL)
 
 app = Flask(__name__)
 
-app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///db.sqlite3'
+app.config["SQLALCHEMY_DATABASE_URI"] = DATABASE_URL
 app.app_context().push()
 db = SQLAlchemy(app)
 
@@ -21,11 +21,17 @@ class User(db.Model):
    def __repr__(self):
        return f'<User: {self.name}>'
 
+db.create_all()
+
 @app.route('/')
 def index():
     return "Welkom to sumoners rift"
 
-@app.route('/<name>')
+@app.route('/home')
+def home():
+    return "Welkom"
+
+@app.route('/add/<name>')
 def add(name):
     _user = User(name=name)
     db.session.add(_user)
